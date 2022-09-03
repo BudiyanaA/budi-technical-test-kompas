@@ -5,7 +5,7 @@
       class="fixed inset-0 w-full h-screen flex items-center justify-center bg-black bg-opacity-75"
       @click.self="close"
     >
-      <form class="relative w-full max-w-sm bg-white shadow-lg rounded-lg p-4 text-left">
+      <div class="relative w-full max-w-sm bg-white shadow-lg rounded-lg p-4 text-left">
         <div class="my-4 font-bold text-lg">
           Tambah Entri
         </div>
@@ -59,22 +59,31 @@
           </button>
           <button
             class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            type="submit"
+            type="button"
+            @click="store"
           >
             Kirim
           </button>
         </div>
-      </form>
+      </div>
     </div>
   </Transition>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   props: {
     showing: {
       required: true,
       type: Boolean
+    }
+  },
+  data: function () {
+    return {
+      name: '',
+      price: null,
     }
   },
   watch: {
@@ -89,7 +98,27 @@ export default {
   methods: {
     close() {
       this.$emit('close');
-    }
+    },
+    async store() {
+      try {
+        const entry = await axios.post(
+          "http://localhost:3000/detail", 
+          {
+            id: Date.now(),
+            jam: new Date().getHours() + ':' + new Date().getMinutes(),
+            tanggal: '19 Februari 2021',
+            nama: this.name,
+            pengeluaraan : this.price
+          }
+        );
+
+        console.log(entry)
+        this.$emit('submit');
+        this.close()
+      } catch(e) {
+        console.log(e);
+      }
+    },
   }
 }
 </script>

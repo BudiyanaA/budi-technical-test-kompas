@@ -17,7 +17,11 @@
     />
   </div>
 
-  <Modal :showing="showModal" @close="showModal = false" />
+  <Modal 
+    :showing="showModal" 
+    @close="showModal = false" 
+    @submit="fetchData"
+  />
 </template>
 
 <script>
@@ -40,13 +44,16 @@ export default {
     }
   },
   mounted () {
-    axios
-      .get('http://localhost:3000/detail')
-      .then(response => (
-        this.items = response.data
-      ))
+    this.fetchData()
   },
   methods: {
+    fetchData: function() {
+      axios
+        .get('http://localhost:3000/detail?_sort=tanggal&_order=desc')
+        .then(response => (
+          this.items = response.data
+        ))
+    },
     groupBy: function (data, key) {
       return data.reduce((item, x) => {
         (item[x[key]] = item[x[key]] || []).push(x);
