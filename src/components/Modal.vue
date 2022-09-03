@@ -24,7 +24,9 @@
             aria-describedby="nameHelp"
             v-model="name"
           />
-          <span class="text-xs text-red-700" id="nameHelp"></span>
+          <span class="text-xs text-red-700" id="nameHelp">
+            {{ error.name }}
+          </span>
         </div>
 
         <div class="mb-6">
@@ -45,7 +47,9 @@
             placeholder="Harga"
           />
 
-          <span class="text-xs text-red-700" id="priceHelp"></span>
+          <span class="text-xs text-red-700" id="priceHelp">
+            {{ error.price }}
+          </span>
         </div>
 
         <div class="flex items-center gap-2 justify-end">
@@ -82,6 +86,10 @@ export default {
   },
   data: function () {
     return {
+      error: {
+        name: '',
+        price: '',
+      },
       name: '',
       price: null,
     }
@@ -97,10 +105,25 @@ export default {
   },
   methods: {
     close() {
+      this.name = ''
+      this.price = null
       this.$emit('close');
     },
     async store() {
+      this.error.name = ''
+      this.error.price = ''
+
       try {
+        if (!this.name) {
+          this.error.name = 'Nama harus diisi'
+          return
+        }
+
+        if (!this.price) {
+          this.error.price = 'Harga harus diisi'
+          return
+        }
+
         const entry = await axios.post(
           "http://localhost:3000/detail", 
           {
@@ -117,6 +140,7 @@ export default {
         this.close()
       } catch(e) {
         console.log(e);
+        alert(e)
       }
     },
   }
